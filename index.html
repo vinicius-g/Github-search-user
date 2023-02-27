@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="style.css">
+    <script src="github.js" defer></script>
+    <title>Portfolio rocketseat</title>
+</head>
+<body>
+    <header>
+        <span>
+            <label for="searchbar">
+                <i class='bx bx-search'></i>
+            </label>
+            <input id="searchbar" type="text">
+        </span>
+
+        <button id="search-button">Pesquisar</button>
+    </header>
+    <main>
+        <section id="initial-screen">
+            <h1 id="message">Pesquise as principais informações de um usuário do github pelo nome de usuário!</h1>
+            <div id="initial-load" class="hide"></div>
+        </section>
+
+        <section id="user-info" class="hide" tabindex="-1">
+            <div id="user-data"></div>
+
+            <div>
+                <ul id="user-complement">
+                </ul>
+            </div>
+
+            <div>
+                <h2>Tecnologias</h2>
+
+                <div id="tech-load" class="hide"></div>
+
+                <div id="user-tech">
+                </div>
+            </div>
+        </section>
+
+        <section id="user-activity" class="hide">
+            <div class="section-header">
+                <h2>Repositórios</h2>
+
+                <button id="show-repos">Mostrar por página:</button>
+                <input id="results-number" type="text" maxlength="2">
+            </div>
+
+            <div class="section-header" id="filter-header">
+                <h2>Critério:</h2>
+
+                <span>
+                    <label for="stars">
+                        <input type="radio" name="filter" value="stars" id="stars">
+                        <i class="bx bx-star"></i>
+                    </label>
+
+                    <label for="forks">
+                        <input type="radio" name="filter" value="forks" id="forks">
+                        <i class="bx bx-git-branch"></i>
+                    </label>
+
+                    <label for="pushed">
+                        <input type="radio" name="filter" value="pushed" id="pushed">
+                        <i class="bx bx-time"></i>
+                    </label>
+                </span>
+
+                <h2>Ordernar:</h2>
+
+                <span>
+                    <label for="sort-up">
+                        <input type="radio" name="sort" value="asc" id="sort-up">
+                        <i class='bx bx-sort-up'></i>
+                    </label>
+
+                    <label for="sort-down">
+                        <input type="radio" name="sort" value="desc" id="sort-down">
+                        <i class='bx bx-sort-down'></i>
+                    </label>
+                </span>
+            </div>
+
+            <section id="user-repos">
+            </section>
+
+            <div id="repo-load" class="hide"></div>
+        </section>
+    </main>
+</body>
+</html>
