@@ -18,7 +18,7 @@ const searchbarButton = document.getElementById("search-button");
 const showRepos = document.getElementById("show-repos");
 const resultsNumber = document.getElementById("results-number");
 
-const token = "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";
+const token = "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";
 const headers = new Headers();
 headers.append("Authorization", "Bearer " + token);
 
