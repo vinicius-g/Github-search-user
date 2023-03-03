@@ -18,7 +18,7 @@ const searchbarButton = document.getElementById("search-button");
 const showRepos = document.getElementById("show-repos");
 const resultsNumber = document.getElementById("results-number");
 
-const token = "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";
+const token = "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";
 const headers = new Headers();
 headers.append("Authorization", "Bearer " + token);
 
@@ -254,21 +254,17 @@ class Repos extends User {
 
 			const res = await responseTotalRepos.json();
 
-			const requests = this.#fetchMultiRepos(res);
+            const data = res.items;
 
-			const responses = await Promise.all(requests);
+			if (res.total_count > 100) {
+                data.push(undefined);
+            }
 
-			const data = await Promise.all(responses.map((response) => response.json()));
+			const numberPages = Math.ceil(data.length / showReposNumber);
 
-			data.push(res);
+			this.#sortRepos(filter, sort, data);
 
-			const dataAllInOne = data.flatMap((res) => res.items);
-
-            const numberPages = Math.ceil(dataAllInOne.length / showReposNumber);
-
-			this.#sortRepos(filter, sort, dataAllInOne);
-
-			return { dataAllInOne, numberPages, showReposNumber };
+			return { data, numberPages, showReposNumber };
 		} catch (err) {
 			this.finishFetch(showRepos);
 			this.#showErrorRepos(err.message);
@@ -302,11 +298,11 @@ class Repos extends User {
 			let reposPage = data.slice(i * resultsNumber, (i + 1) * resultsNumber);
 
 			reposPage.forEach((repo) => {
-                if (!repo) {
-                    this.constructElement("Número de repositórios excedeu o limite!", "h2", reposContainer);
-                } else {
-                    this.constructRepo(repo, reposContainer, options);
-                }
+				if (!repo) {
+					this.constructElement("Número de repositórios excedeu o limite!", "h2", reposContainer);
+				} else {
+					this.constructRepo(repo, reposContainer, options);
+				}
 			});
 		}
 
@@ -319,19 +315,6 @@ class Repos extends User {
 	fetchLoad() {
 		userRepos.innerHTML = "";
 		repoLoad.classList.remove("hide");
-	}
-
-	#fetchMultiRepos(res) {
-		let requestsNeeded = Math.ceil(res.total_count / 100);
-
-		let requests = [];
-		for (let page = 2; page <= requestsNeeded; page++) {
-			const request = fetch(`https://api.github.com/search/repositories?q=user:${user}&per_page=100&page=${page}`, { headers });
-
-			requests.push(request);
-		}
-
-		return requests;
 	}
 
 	#sortRepos(filter, sort, data) {
@@ -550,8 +533,12 @@ class Repos extends User {
 		let firstItem = Math.max(1, selectedPage - Math.floor(pagesPerBlock / 2));
 		let lastItem = Math.min(numberPages, firstItem + (pagesPerBlock - 1));
 
-		if (firstItem > lastItem - 4 && lastItem - 4 > 0) {
+		if (firstItem > lastItem - 4) {
 			firstItem = lastItem - 4;
+		}
+
+		if (firstItem <= 0) {
+			firstItem = 1;
 		}
 
 		for (let i = firstItem; i <= lastItem; i++) {
@@ -573,22 +560,9 @@ class Repos extends User {
 }
 
 class Techs extends User {
-	async fetchData(user) {
-		this.fetchLoad();
-
-		try {
-			const response = await fetch(`https://api.github.com/search/repositories?q=user:${user}`, { headers });
-
-			this.#handleErrors(response);
-
-			const res = await response.json();
-
-			return res.items;
-		} catch (err) {
-			this.#showErrorTechs(err.message);
-			return false;
-		}
-	}
+    fetchData() {
+        this.fetchLoad();
+    }
 
 	#handleErrors(response) {
 		if (!response.ok) {
@@ -611,9 +585,13 @@ class Techs extends User {
 	}
 
 	async makePage(res) {
+        let filteredRes = res.filter((item) => {
+            return item !== undefined;
+        })
+
 		let languages = new Set();
 
-		const requests = res.map((repo) => this.#fetchLanguages(repo));
+		const requests = filteredRes.map((repo) => this.#fetchLanguages(repo));
 		const responses = await Promise.all(requests).catch((err) => {
 			this.#showErrorTechs(err.message);
 		});
@@ -677,18 +655,16 @@ searchbarButton.addEventListener("click", async () => {
 		user.makePage(userRes);
 		userComplementary.makePage(userRes);
 
-		let responses = await Promise.all([repos.fetchData(userSelected), techs.fetchData(userSelected)]);
+        techs.fetchData();
 
-		let { dataAllInOne, numberPages, showReposNumber } = responses[0];
+        let response = await repos.fetchData(userSelected)
 
-		if (dataAllInOne) {
-			repos.makePage(dataAllInOne, numberPages, showReposNumber);
-		}
+		let { data, numberPages, showReposNumber } = response;
 
-		let techRes = responses[1];
+		if (data) {
+			repos.makePage(data, numberPages, showReposNumber);
 
-		if (techRes) {
-			await techs.makePage(techRes);
+            await techs.makePage(data);
 		}
 
 		user.finishFetch(searchbarButton);
@@ -713,10 +689,10 @@ showRepos.addEventListener("click", async () => {
 
 	let sortSelected = document.querySelector("[name=sort]:checked") ? document.querySelector("[name=sort]:checked").value : "desc";
 
-	let { dataAllInOne, numberPages, showReposNumber } = await repos.fetchData(userSelected, resultsNumberSelected, filterSelected, sortSelected);
+	let { data, numberPages, showReposNumber } = await repos.fetchData(userSelected, resultsNumberSelected, filterSelected, sortSelected);
 
-	if (dataAllInOne) {
-		repos.makePage(dataAllInOne, numberPages, showReposNumber);
+	if (data) {
+		repos.makePage(data, numberPages, showReposNumber);
 	}
 });
 

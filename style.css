@@ -353,13 +353,14 @@ main {
 #user-activity > #filter-header h2 {
     display: inline;
     margin-right: 10px;
-    font-size: medium;
+    font-size: smaller;
 }
 
 #user-activity > #filter-header span {
     display: flex;
     justify-self: flex-start;
-    column-gap: 10px;
+    column-gap: 5px;
+    font-size: small;
 }
 
 #user-activity > #filter-header span:first-of-type {
