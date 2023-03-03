@@ -18,7 +18,7 @@ const searchbarButton = document.getElementById("search-button");
 const showRepos = document.getElementById("show-repos");
 const resultsNumber = document.getElementById("results-number");
 
-const token = "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";
+const token = "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";
 const headers = new Headers();
 headers.append("Authorization", "Bearer " + token);
 
@@ -605,21 +605,18 @@ class Techs extends User {
 		languages.forEach((language) => {
 			this.constructElement(language, "span", this.mainContainer);
 		});
-
-		this.#fetchResults();
 	}
 
 	fetchLoad() {
 		techLoad.classList.remove("hide");
 	}
 
-	#fetchResults() {
+	finishFetch() {
 		techLoad.classList.add("hide");
 	}
 
 	#showErrorTechs(errorMessage) {
 		this.constructElement(errorMessage, "p", this.mainContainer);
-		this.#fetchResults();
 	}
 
 	async #fetchLanguages(repo) {
@@ -666,6 +663,8 @@ searchbarButton.addEventListener("click", async () => {
 
             await techs.makePage(data);
 		}
+
+        techs.finishFetch();
 
 		user.finishFetch(searchbarButton);
 	}
